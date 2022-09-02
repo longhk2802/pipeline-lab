@@ -9,9 +9,33 @@ pipeline {
     }
 
     stage('Fluffy Test') {
-      steps {
-        sh './jenkins/test-all.sh'
-        junit(testResults: 'target/**/TEST*.xml', skipPublishingChecks: true)
+      parallel {
+        stage('backend') {
+          steps {
+            sh './jenkins/test-backend.sh'
+            junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
+          }
+        }
+
+        stage('fontend') {
+          steps {
+            sh './jenkins/test-frontend.sh'
+            junit 'target/test-results/**/TEST*.xml'
+          }
+        }
+
+        stage('statictics') {
+          steps {
+            sh './jenkins/test-static.sh'
+          }
+        }
+
+        stage('performance') {
+          steps {
+            sh './jenkins/test-performance.sh'
+          }
+        }
+
       }
     }
 
