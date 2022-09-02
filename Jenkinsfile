@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Fluffy Build') {
       steps {
-        sh 'echo \'Anthoer Place holder\''
+        sh 'echo \'Edited Place holder\''
       }
     }
 
