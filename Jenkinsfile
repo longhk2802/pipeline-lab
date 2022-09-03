@@ -3,20 +3,45 @@ pipeline {
   stages {
     stage('Fluffy Build') {
       steps {
-        sh 'echo \'Edited Place holder\''
+        sh './jenkins/build.sh'
+        archiveArtifacts 'target/*.jar'
       }
     }
 
     stage('Fluffy Test') {
-      steps {
-        sh 'sleep 5'
-        sh 'echo success!'
+      parallel {
+        stage('backend') {
+          steps {
+            sh './jenkins/test-backend.sh'
+            junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
+          }
+        }
+
+        stage('fontend') {
+          steps {
+            sh './jenkins/test-frontend.sh'
+            junit 'target/test-results/**/TEST*.xml'
+          }
+        }
+
+        stage('statictics') {
+          steps {
+            sh './jenkins/test-static.sh'
+          }
+        }
+
+        stage('performance') {
+          steps {
+            sh './jenkins/test-performance.sh'
+          }
+        }
+
       }
     }
 
     stage('Fluffy Deploy') {
       steps {
-        echo 'Placeholder'
+        sh './jenkins/deploy.sh staging'
       }
     }
 
