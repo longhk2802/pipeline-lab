@@ -10,10 +10,15 @@ pipeline {
             }
 
           }
+          post {
+            success {
+              archiveArtifacts 'target/*.jar'
+              stash(name: 'Java 7', includes: 'target/**')
+            }
+
+          }
           steps {
             sh './jenkins/build.sh'
-            archiveArtifacts 'target/*.jar'
-            stash(name: 'Java 7', includes: 'target/**')
           }
         }
 
@@ -24,9 +29,14 @@ pipeline {
             }
 
           }
+          post {
+            success {
+              stash(name: 'Java 8', includes: 'target/**')
+            }
+
+          }
           steps {
             sh './jenkins/build.sh'
-            stash(name: 'Java 8', includes: 'target/**')
           }
         }
 
@@ -42,10 +52,15 @@ pipeline {
             }
 
           }
+          post {
+            always {
+              junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
+            }
+
+          }
           steps {
             unstash 'Java 7'
             sh './jenkins/test-backend.sh'
-            junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
           }
         }
 
@@ -56,10 +71,15 @@ pipeline {
             }
 
           }
+          post {
+            always {
+              junit 'target/test-results/**/TEST*.xml'
+            }
+
+          }
           steps {
             unstash 'Java 7'
             sh './jenkins/test-frontend.sh'
-            junit 'target/test-results/**/TEST*.xml'
           }
         }
 
@@ -96,10 +116,15 @@ pipeline {
             }
 
           }
+          post {
+            always {
+              junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
+            }
+
+          }
           steps {
             unstash 'Java 8'
             sh './jenkins/test-backend.sh'
-            junit(testResults: 'target/surefire-reports/**/TEST*.xml', skipPublishingChecks: true)
           }
         }
 
@@ -110,10 +135,15 @@ pipeline {
             }
 
           }
+          post {
+            always {
+              junit 'target/test-results/**/TEST*.xml'
+            }
+
+          }
           steps {
             unstash 'Java 8'
             sh './jenkins/test-frontend.sh'
-            junit 'target/test-results/**/TEST*.xml'
           }
         }
 
