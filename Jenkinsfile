@@ -177,6 +177,9 @@ pipeline {
     }
 
     stage('Confirm Deploy') {
+      when {
+        branch 'master'
+      }
       steps {
         input(message: 'Okay to deploy to staging?', ok: 'yes')
       }
@@ -188,6 +191,9 @@ pipeline {
           label 'java8'
         }
 
+      }
+      when {
+        branch 'master'
       }
       steps {
         unstash 'Java 7'
